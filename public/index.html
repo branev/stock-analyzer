@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Price Analyzer</title>
+    <link rel="stylesheet" href="vendor/pico-2.0.6.min.css" />
+    <!-- app.js MUST load before alpine.js. Both have defer so they execute in
+         document order after parsing. app.js registers an alpine:init listener
+         which Alpine fires during its auto-start; if alpine.js loaded first,
+         the event would have already fired before the listener was attached. -->
+    <script defer src="app.js"></script>
+    <script defer src="vendor/alpine-3.14.9.min.js"></script>
+  </head>
+  <body>
+    <main class="container" x-data="analyzer">
+      <header>
+        <hgroup>
+          <h1 x-text="header.title">Loading…</h1>
+          <p x-text="header.coverage">Loading coverage period…</p>
+        </hgroup>
+      </header>
+
+      <section>
+        <form @submit.prevent="analyse">
+          <fieldset>
+            <label for="from">
+              From
+              <input
+                type="datetime-local"
+                id="from"
+                x-model="form.from"
+                :min="form.minLocal"
+                :max="form.maxLocal"
+              />
+            </label>
+
+            <label for="to">
+              To
+              <input
+                type="datetime-local"
+                id="to"
+                x-model="form.to"
+                :min="form.minLocal"
+                :max="form.maxLocal"
+              />
+            </label>
+
+            <label for="funds">
+              Available funds (USD, optional)
+              <input
+                type="number"
+                id="funds"
+                min="0"
+                step="any"
+                x-model="form.funds"
+                placeholder="e.g. 1000"
+              />
+            </label>
+          </fieldset>
+
+          <button type="submit" :disabled="!canAnalyse" :aria-busy="state.loading">
+            Analyse
+          </button>
+
+          <p
+            x-show="state.error"
+            x-text="state.error"
+            role="alert"
+            class="error"
+          ></p>
+        </form>
+      </section>
+
+      <section
+        x-show="state.result || state.nullResult"
+        aria-live="polite"
+      >
+        <h2>Result</h2>
+
+        <p x-show="state.nullResult">No profitable trade in this window.</p>
+
+        <template x-if="state.result">
+          <div>
+            <p>
+              Buy at
+              <strong x-text="formatPickerTime(state.result.buy.time) + ' UTC'"></strong>
+              for
+              <strong x-text="formatCurrency(state.result.buy.price)"></strong>,
+              sell at
+              <strong x-text="formatPickerTime(state.result.sell.time) + ' UTC'"></strong>
+              for
+              <strong x-text="formatCurrency(state.result.sell.price)"></strong>,
+              profit
+              <strong x-text="formatCurrency(state.result.profitPerShare)"></strong>
+              per share.
+            </p>
+
+            <p x-show="hasFunds">
+              With
+              <strong x-text="formatCurrency(parseFloat(form.funds))"></strong>
+              you could have bought
+              <strong x-text="sharesAffordable"></strong>
+              shares for
+              <strong x-text="formatCurrency(totalProfit)"></strong>
+              total profit.
+            </p>
+
+            <details>
+              <summary>Show math</summary>
+              <ul>
+                <li>
+                  Per-share profit:
+                  <strong x-text="formatCurrency(state.result.profitPerShare)"></strong>
+                </li>
+                <template x-if="hasFunds">
+                  <li>
+                    Shares affordable:
+                    <strong x-text="sharesAffordable"></strong>
+                    (<span x-text="formatCurrency(parseFloat(form.funds))"></span>
+                    ÷
+                    <span x-text="formatCurrency(state.result.buy.price)"></span>,
+                    floor)
+                  </li>
+                </template>
+                <template x-if="hasFunds">
+                  <li>
+                    Total profit:
+                    <strong x-text="formatCurrency(totalProfit)"></strong>
+                    (<span x-text="sharesAffordable"></span>
+                    ×
+                    <span x-text="formatCurrency(state.result.profitPerShare)"></span>)
+                  </li>
+                </template>
+              </ul>
+            </details>
+          </div>
+        </template>
+      </section>
+    </main>
+  </body>
+</html>

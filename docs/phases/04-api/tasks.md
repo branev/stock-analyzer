@@ -151,7 +151,7 @@ Use `Test.createTestingModule` with `AppModule` for the happy paths, error paths
   - Confirm `src/api/` files are present.
   - Confirm Phase 2 + Phase 3 doc cleanup (status headers + all-checked tasks) is staged with this commit, not committed separately.
   - Confirm no stray test/debug files left on disk.
-- [ ] **I8.** Stage explicitly (no `git add .`):
+- [x] **I8.** Stage explicitly (no `git add .`):
   - `src/api/` (all files in the directory).
   - `src/main.ts` (modified for ValidationPipe + global filter + global prefix + carve-out + logger).
   - `src/app.module.ts` (modified for LoggerModule + ThrottlerModule + ApiModule or controller registrations).
@@ -159,5 +159,5 @@ Use `Test.createTestingModule` with `AppModule` for the happy paths, error paths
   - `docs/phases/04-api/requirements.md` and `docs/phases/04-api/tasks.md` (the Phase 4 contract).
   - `docs/phases/02-data-and-repository/requirements.md`, `docs/phases/02-data-and-repository/tasks.md` (cleanup: status header + all-checked tasks).
   - `docs/phases/03-algorithm/requirements.md`, `docs/phases/03-algorithm/tasks.md` (same cleanup).
-- [ ] **I9.** Commit with message exactly: `feat: add /api/analyze, /api/dataset, /health with validation, error envelope, throttling, and JSON logging`. Include a body that summarises the three endpoints, the validation rule (ISO 8601 UTC second-precision), the error envelope and code mapping, the response rounding rule (`Math.round(x*100)/100`, never `toFixed`), the logger choice (JSON everywhere), and the throttler limits. Mention the Phase 2/3 doc cleanup folded in.
-- [ ] **I10.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 4 status header to `Complete — commit <hash>`. Report the I0 articulations and any deletions.
+- [x] **I9.** Commit with message exactly: `feat: add /api/analyze, /api/dataset, /health with validation, error envelope, throttling, and JSON logging`. Include a body that summarises the three endpoints, the validation rule (ISO 8601 UTC second-precision), the error envelope and code mapping, the response rounding rule (`Math.round(x*100)/100`, never `toFixed`), the logger choice (JSON everywhere), and the throttler limits. Mention the Phase 2/3 doc cleanup folded in.
+- [x] **I10.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 4 status header to `Complete — commit <hash>`. Report the I0 articulations and any deletions.

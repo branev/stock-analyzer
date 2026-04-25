@@ -1,6 +1,6 @@
 # Phase 4 — API
 
-> **Status:** Planning — drafted, not yet approved.
+> **Status:** Complete — commit `6bf5345` (`feat: add /api/analyze, /api/dataset, /health with validation, error envelope, throttling, and JSON logging`).
 
 Local contract for Phase 4. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`; this document is the per-phase scope agreement.
 
