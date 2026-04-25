@@ -107,5 +107,5 @@ This test lives in Phase 3, alongside the algorithm — not in Phase 4's HTTP la
   - `src/analysis/best-trade.spec.ts`
   - `docs/phases/03-algorithm/requirements.md` and `docs/phases/03-algorithm/tasks.md` (these fold into the Phase 3 commit, not a separate one)
   - Any incidental updates to `package.json` (unlikely; flag if present).
-- [ ] **F8.** Commit with message exactly: `feat: add best-trade algorithm with explicit tiebreaker, brute-force reference, and complexity assertion`. Include a body that summarises the algorithm shape, the tiebreaker rule and worked example, the brute-force property test (100 × 20, seeded), and the complexity assertion (full-day under 100ms).
-- [ ] **F9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Report the F0 articulations and any deletions.
+- [x] **F8.** Commit with message exactly: `feat: add best-trade algorithm with explicit tiebreaker, brute-force reference, and complexity assertion`. Include a body that summarises the algorithm shape, the tiebreaker rule and worked example, the brute-force property test (100 × 20, seeded), and the complexity assertion (full-day under 100ms).
+- [x] **F9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Report the F0 articulations and any deletions.

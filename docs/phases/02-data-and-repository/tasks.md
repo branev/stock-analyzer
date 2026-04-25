@@ -108,5 +108,5 @@ Use a small fixture (e.g. 10 ticks) for these unit tests. The fixture's `startTi
   - `data/acme.json`
   - `src/data/` (whatever the repository module produced)
   - Updates to `src/app.module.ts` and `package.json` if applicable
-- [ ] **F8.** Commit with message exactly: `feat: add mock-data generator and file-backed price repository with boot-time integrity check`. Include a body that summarises the four phases, the seed value, the integrity-check rule list, and the dataset-quality verification step.
-- [ ] **F9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`.
+- [x] **F8.** Commit with message exactly: `feat: add mock-data generator and file-backed price repository with boot-time integrity check`. Include a body that summarises the four phases, the seed value, the integrity-check rule list, and the dataset-quality verification step.
+- [x] **F9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`.

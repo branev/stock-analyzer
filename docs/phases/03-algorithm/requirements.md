@@ -1,5 +1,7 @@
 # Phase 3 — Algorithm
 
+> **Status:** Complete — commit `3669345` (`feat: add best-trade algorithm with explicit tiebreaker, brute-force reference, and complexity assertion`).
+
 Local contract for Phase 3. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`; this document is the per-phase scope agreement.
 
 ## Goal

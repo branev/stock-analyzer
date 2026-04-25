@@ -1,5 +1,7 @@
 # Phase 2 — Data and Repository
 
+> **Status:** Complete — commit `540e5ec` (`feat: add mock-data generator and file-backed price repository with boot-time integrity check`).
+
 Local contract for Phase 2. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`; this document is the per-phase scope agreement.
 
 ## Goal

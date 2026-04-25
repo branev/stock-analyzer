@@ -28,3 +28,11 @@
 ## When ambiguous
 
 Propose and ask. Do not make unilateral decisions on anything not covered in the docs.
+
+## Reporting style
+
+When you create or modify files, report briefly: filename, line count, summary, and any interpretive choices worth flagging. Don't paste full file contents into chat unless I explicitly ask. I'll open files myself.
+
+## Task tracking
+
+When a phase has a `tasks.md` with checkboxes, mark each task `[x]` as you complete it. After commit, retroactively mark any tasks that were necessarily `[ ]` at staging time (e.g. the commit task itself). Fold the retroactive update into a subsequent commit; don't make it its own commit.
