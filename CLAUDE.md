@@ -19,6 +19,7 @@
 - Self-documenting names; comments explain *why*, never *what*.
 - Single responsibility per function.
 - **Spec safety net:** read `intervalSeconds` from the data file in every index↔time calculation. Never hardcode `1`.
+- Don't anticipate. No abstractions, helpers, or configurability for hypothetical future requirements. Three similar lines beats a premature abstraction.
 
 ## Dependency hygiene
 
