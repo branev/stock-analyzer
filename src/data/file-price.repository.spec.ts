@@ -157,33 +157,24 @@ describe('FilePriceRepository', () => {
       }).toThrow(/prices/);
     });
 
-    it('throws when prices contains NaN', () => {
-      // Arrange — NaN does not survive JSON.stringify (becomes null), so write
-      // the file body directly with the literal "NaN" token.
-      const body = `{"symbol":"ACME","name":"Acme Corporation","currency":"USD","startTime":"2026-04-22T09:30:00Z","intervalSeconds":1,"prices":[100,NaN,102]}`;
+    it('throws when prices contains a value that parses to Infinity via numeric overflow', () => {
+      // Arrange — `1e400` is valid JSON syntax but exceeds IEEE 754, so
+      // JSON.parse converts it to Infinity. This is the only realistic way
+      // for a non-finite number to reach our runtime Number.isFinite check
+      // via the file-loading path. Write the body directly because
+      // JSON.stringify converts in-memory Infinity to null.
+      const body = `{"symbol":"ACME","name":"Acme Corporation","currency":"USD","startTime":"2026-04-22T09:30:00Z","intervalSeconds":1,"prices":[100,1e400,102]}`;
       const filePath = path.join(tmpDir, 'data.json');
       fs.writeFileSync(filePath, body);
       const repo = new FilePriceRepository(filePath);
 
-      // Act + Assert — JSON.parse will reject the literal NaN, surfacing as
-      // an unparseable-JSON error. Either rejection path is acceptable; the
-      // contract is "loading must fail with the file path named".
+      // Act + Assert — assert the runtime-path message, not just any
+      // rejection. This pins down that the runtime Number.isFinite() check
+      // fired, not the JSON-parse syntax rejection (which would produce
+      // the "is not valid JSON" message instead).
       expect(() => {
         repo.onModuleInit();
-      }).toThrow(/data\.json/);
-    });
-
-    it('throws when prices contains Infinity', () => {
-      // Arrange — same JSON-literal trick as the NaN test.
-      const body = `{"symbol":"ACME","name":"Acme Corporation","currency":"USD","startTime":"2026-04-22T09:30:00Z","intervalSeconds":1,"prices":[100,Infinity,102]}`;
-      const filePath = path.join(tmpDir, 'data.json');
-      fs.writeFileSync(filePath, body);
-      const repo = new FilePriceRepository(filePath);
-
-      // Act + Assert
-      expect(() => {
-        repo.onModuleInit();
-      }).toThrow(/data\.json/);
+      }).toThrow(/not a finite number/);
     });
 
     it('initialises cleanly when the file is well-formed', () => {
