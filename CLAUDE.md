@@ -16,14 +16,14 @@
 
 - Strict TypeScript. No `any` — if genuinely needed, escape with an inline comment explaining why.
 - No `console.log` in production code.
-- Self-documenting names; comments explain *why*, never *what*.
+- Self-documenting names; comments explain _why_, never _what_.
 - Single responsibility per function.
 - **Spec safety net:** read `intervalSeconds` from the data file in every index↔time calculation. Never hardcode `1`.
 - Don't anticipate. No abstractions, helpers, or configurability for hypothetical future requirements. Three similar lines beats a premature abstraction.
 
 ## Dependency hygiene
 
-- Pinned exact versions in `package.json`. Respect `min-release-age=7d` in `.npmrc`.
+- Pinned exact versions in `package.json`. Respect `min-release-age=7` in `.npmrc` (npm 11.x interprets the numeric value as days).
 
 ## When ambiguous
 
