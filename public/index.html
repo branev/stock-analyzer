@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Stock Price Analyzer</title>
     <link rel="stylesheet" href="vendor/pico-2.0.6.min.css" />
+    <style>
+      .error {
+        color: #d62828;
+        font-weight: 600;
+      }
+      .intro {
+        color: var(--pico-muted-color);
+        margin-bottom: 1rem;
+      }
+      /* Pico v2's [aria-invalid=true] rule sets --pico-border-color but the
+         datetime-local input border actually consumes
+         --pico-form-element-border-color. Override directly so date pickers
+         get a red border on INVALID_RANGE / OUT_OF_BOUNDS. */
+      input[type='datetime-local'][aria-invalid='true'] {
+        border-color: var(--pico-form-element-invalid-border-color) !important;
+      }
+    </style>
     <!-- app.js MUST load before alpine.js. Both have defer so they execute in
          document order after parsing. app.js registers an alpine:init listener
          which Alpine fires during its auto-start; if alpine.js loaded first,
@@ -22,6 +39,9 @@
       </header>
 
       <section>
+        <p class="intro">
+          Please pick a slice of the available period to analyse.
+        </p>
         <form @submit.prevent="analyse">
           <fieldset>
             <label for="from">
@@ -32,6 +52,8 @@
                 x-model="form.from"
                 :min="form.minLocal"
                 :max="form.maxLocal"
+                :aria-invalid="invalidDateError ? 'true' : null"
+                @click="$event.target.showPicker?.()"
               />
             </label>
 
@@ -43,6 +65,8 @@
                 x-model="form.to"
                 :min="form.minLocal"
                 :max="form.maxLocal"
+                :aria-invalid="invalidDateError ? 'true' : null"
+                @click="$event.target.showPicker?.()"
               />
             </label>
 
@@ -52,10 +76,11 @@
                 type="number"
                 id="funds"
                 min="0"
-                step="any"
-                x-model="form.funds"
+                step="0.01"
+                x-model.number="form.funds"
                 placeholder="e.g. 1000"
               />
+              <small>Leave blank to see profit per share only.</small>
             </label>
           </fieldset>
 
@@ -98,7 +123,7 @@
 
             <p x-show="hasFunds">
               With
-              <strong x-text="formatCurrency(parseFloat(form.funds))"></strong>
+              <strong x-text="formatCurrency(form.funds)"></strong>
               you could have bought
               <strong x-text="sharesAffordable"></strong>
               shares for
@@ -117,7 +142,7 @@
                   <li>
                     Shares affordable:
                     <strong x-text="sharesAffordable"></strong>
-                    (<span x-text="formatCurrency(parseFloat(form.funds))"></span>
+                    (<span x-text="formatCurrency(form.funds)"></span>
                     ÷
                     <span x-text="formatCurrency(state.result.buy.price)"></span>,
                     floor)

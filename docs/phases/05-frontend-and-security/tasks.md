@@ -126,13 +126,13 @@ Use `Test.createTestingModule` with `AppModule`. Apply the same global pipe/filt
 - [x] **H4.** Run `npm run test:e2e`. Must pass. (The e2e test still hits `/health`; it should still return 200 through the now-richer middleware stack.)
 - [x] **H5.** Run `npm run build`. Must be clean. Confirm `dist/public/` is populated (D3).
 - [x] **H6.** Run `npm audit --audit-level=high`. Must report zero vulnerabilities at this level.
-- [ ] **H7.** `git status` review:
+- [x] **H7.** `git status` review:
   - Confirm `public/` (with `index.html`, `app.js`, and `vendor/` containing the two pinned files) is staged.
   - Confirm `src/api/static.spec.ts` is staged.
   - Confirm `src/main.ts` and `src/app.module.ts` modifications are staged.
   - Confirm Phase 4 retroactive cleanup (status header on `04-api/requirements.md`, I8/I9/I10 ticks on `04-api/tasks.md`) is staged with this commit.
   - Confirm no stray test files left on disk.
-- [ ] **H8.** Stage explicitly (no `git add .`):
+- [x] **H8.** Stage explicitly (no `git add .`):
   - `public/` (entire directory).
   - `src/api/static.spec.ts`.
   - `src/main.ts` and `src/app.module.ts` (modified).
@@ -140,5 +140,5 @@ Use `Test.createTestingModule` with `AppModule`. Apply the same global pipe/filt
   - `nest-cli.json` if the `assets` config was added (D2).
   - `docs/phases/04-api/requirements.md` and `docs/phases/04-api/tasks.md` (Phase 4 retroactive cleanup).
   - `docs/phases/05-frontend-and-security/requirements.md` and `docs/phases/05-frontend-and-security/tasks.md`.
-- [ ] **H9.** Commit with message exactly: `feat: add static frontend, Helmet CSP, and same-origin serving`. Include a body that lists the four committed assets (HTML, app.js, Alpine, Pico with versions), the CSP carve-outs (`style-src 'self' 'unsafe-inline'`, `script-src 'self'`), the route-precedence rule, and a note that the manual browser verification (Section G) was completed. Mention the Phase 4 retroactive cleanup folded in. Report the H0 articulations and any deletions.
-- [ ] **H10.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 5 status header in `requirements.md` to `Complete — commit <hash>`. Retroactively flip H7/H8/H9/H10 to `[x]` per the CLAUDE.md task-tracking rule (folds into Phase 6's commit, not its own).
+- [x] **H9.** Commit with message exactly: `feat: add static frontend, Helmet CSP, and same-origin serving`. Include a body that lists the four committed assets (HTML, app.js, Alpine, Pico with versions), the CSP carve-outs (`style-src 'self' 'unsafe-inline'`, `script-src 'self'`), the route-precedence rule, and a note that the manual browser verification (Section G) was completed. Mention the Phase 4 retroactive cleanup folded in. Report the H0 articulations and any deletions.
+- [x] **H10.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 5 status header in `requirements.md` to `Complete — commit <hash>`. Retroactively flip H7/H8/H9/H10 to `[x]` per the CLAUDE.md task-tracking rule (folds into Phase 6's commit, not its own).

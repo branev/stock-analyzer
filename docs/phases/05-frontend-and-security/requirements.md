@@ -1,6 +1,6 @@
 # Phase 5 — Frontend and Security
 
-> **Status:** Planning — drafted, not yet approved.
+> **Status:** Complete — commit `ac173b7` (`feat: add static frontend, Helmet CSP, and same-origin serving`).
 
 Local contract for Phase 5. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`; this document is the per-phase scope agreement.
 

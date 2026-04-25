@@ -8,7 +8,13 @@ document.addEventListener('alpine:init', () => {
   Alpine.data('analyzer', () => ({
     header: { title: 'Loading…', coverage: 'Loading coverage period…' },
     form: { from: '', to: '', funds: '', minLocal: '', maxLocal: '' },
-    state: { loading: false, result: null, nullResult: false, error: null },
+    state: {
+      loading: false,
+      result: null,
+      nullResult: false,
+      error: null,
+      errorCode: null,
+    },
     dataset: null,
 
     async init() {
@@ -20,7 +26,7 @@ document.addEventListener('alpine:init', () => {
         const data = await res.json();
         this.dataset = data;
         this.header.title = `${data.symbol} — ${data.name}`;
-        this.header.coverage = `${formatPickerTime(data.from)} → ${formatPickerTime(data.to)} UTC`;
+        this.header.coverage = `Available data for the period between ${formatPickerTime(data.from)} UTC and ${formatPickerTime(data.to)} UTC.`;
         this.form.minLocal = isoToPickerValue(data.from);
         this.form.maxLocal = isoToPickerValue(data.to);
       } catch (err) {
@@ -35,18 +41,25 @@ document.addEventListener('alpine:init', () => {
       return true;
     },
 
+    // funds is bound via x-model.number, so it's a number when the user
+    // has typed something and an empty string when they haven't (parseFloat
+    // of '' is NaN under x-model.number, which we exclude via the > 0 check).
+    // The HTML5 min="0" attribute prevents most negative input via the
+    // browser's spinner; the > 0 check here also excludes any negative that
+    // sneaks through (e.g. via paste).
     get hasFunds() {
-      const f = parseFloat(this.form.funds);
+      const f = this.form.funds;
       return (
-        Number.isFinite(f) &&
+        typeof f === 'number' &&
         f > 0 &&
-        this.state.result?.buy?.price > 0
+        this.state.result !== null &&
+        this.state.result.profitPerShare > 0
       );
     },
 
     get sharesAffordable() {
       if (!this.hasFunds) return 0;
-      return Math.floor(parseFloat(this.form.funds) / this.state.result.buy.price);
+      return Math.floor(this.form.funds / this.state.result.buy.price);
     },
 
     get totalProfit() {
@@ -54,11 +67,22 @@ document.addEventListener('alpine:init', () => {
       return this.sharesAffordable * this.state.result.profitPerShare;
     },
 
+    // True when the error specifically implicates the date fields (range or
+    // bounds). The API doesn't tell us which of the two fields is at fault,
+    // so the visual cue applies to both — the user knows the pair is wrong.
+    get invalidDateError() {
+      return (
+        this.state.errorCode === 'INVALID_RANGE' ||
+        this.state.errorCode === 'OUT_OF_BOUNDS'
+      );
+    },
+
     async analyse() {
       this.state.loading = true;
       this.state.result = null;
       this.state.nullResult = false;
       this.state.error = null;
+      this.state.errorCode = null;
       try {
         // <input type="datetime-local"> gives minute precision in the browser
         // UI: 'YYYY-MM-DDTHH:MM'. The API requires second precision UTC:
@@ -74,6 +98,7 @@ document.addEventListener('alpine:init', () => {
 
         if (!res.ok) {
           this.state.error = body?.message ?? 'Request failed.';
+          this.state.errorCode = body?.code ?? null;
           return;
         }
 
