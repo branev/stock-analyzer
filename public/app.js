@@ -26,13 +26,18 @@ document.addEventListener('alpine:init', () => {
         const data = await res.json();
         this.dataset = data;
         // Eyebrow line: "<name> • <from> UTC → <time-of-to> UTC".
-        // The .split(' ')[1] extracts just the time portion of the second
-        // timestamp because the dataset is a single trading day. If a
-        // future dataset spans multiple days, render the full date on both
-        // sides instead.
-        this.header.coverage = `${data.name} • ${formatPickerTime(data.from)} UTC → ${formatPickerTime(data.to).split(' ')[1]} UTC`;
+        // formatTimeOnly drops the date for the second timestamp because the
+        // dataset is a single trading day. If a future dataset spans multiple
+        // days, render the full date on both sides via formatPickerTime.
+        this.header.coverage = `${data.name} • ${formatPickerTime(data.from)} UTC → ${formatTimeOnly(data.to)} UTC`;
         this.form.minLocal = isoToPickerValue(data.from);
         this.form.maxLocal = isoToPickerValue(data.to);
+        // Pre-populate the form with the full coverage window. Brief: "Defaults
+        // to the full window on first load." The :min/:max bindings on the two
+        // inputs depend on form.from / form.to (each picker constrains the
+        // other), so a profitable submit is one click away on page load.
+        this.form.from = this.form.minLocal;
+        this.form.to = this.form.maxLocal;
       } catch (err) {
         this.state.error = err?.message ?? 'Failed to initialise.';
       }
@@ -79,6 +84,29 @@ document.addEventListener('alpine:init', () => {
         this.state.errorCode === 'INVALID_RANGE' ||
         this.state.errorCode === 'OUT_OF_BOUNDS'
       );
+    },
+
+    // Per-field client-side range checks. The two pickers constrain each
+    // other (From's max = current To, To's min = current From), so a value
+    // that was valid a moment ago can become invalid when the other picker
+    // moves. Native browser validation only surfaces this on submit AND
+    // only on the first invalid field — these getters drive always-visible
+    // inline messages so both fields can show errors at the same time.
+    get fromError() {
+      if (!this.form.from || !this.dataset) return null;
+      const min = this.form.minLocal;
+      const max = this.form.to || this.form.maxLocal;
+      if (this.form.from < min) return `Must be ${formatPickerBound(min)} or later.`;
+      if (this.form.from > max) return `Must be ${formatPickerBound(max)} or earlier.`;
+      return null;
+    },
+    get toError() {
+      if (!this.form.to || !this.dataset) return null;
+      const min = this.form.from || this.form.minLocal;
+      const max = this.form.maxLocal;
+      if (this.form.to < min) return `Must be ${formatPickerBound(min)} or later.`;
+      if (this.form.to > max) return `Must be ${formatPickerBound(max)} or earlier.`;
+      return null;
     },
 
     // For OUT_OF_BOUNDS only, append the dataset's available range to the
@@ -135,20 +163,83 @@ document.addEventListener('alpine:init', () => {
 
 function formatCurrency(value) {
   if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
-  // Display formatting only — toFixed(2) returns a string here for *rendering*.
-  // The API already rounded to two decimals via Math.round(x*100)/100; the
-  // CLAUDE.md "never toFixed" rule applies to API serialisation, not client
-  // display.
-  return `$${value.toFixed(2)}`;
+  // Display formatting only. Intl.NumberFormat with en-US locale gives us
+  // accounting notation: comma thousands separators, period decimals,
+  // exactly two fraction digits, USD currency symbol — e.g.
+  // 1000000000 -> "$1,000,000,000.00", 21.54 -> "$21.54". The API already
+  // rounded to two decimals via Math.round(x*100)/100; the CLAUDE.md
+  // "never toFixed" rule applies to API serialisation, not client display.
+  // en-US is hardcoded (rather than runtime locale) because the dataset
+  // currency is USD; for non-USD datasets we'd derive locale from the
+  // dataset.currency code instead.
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 function formatPickerTime(iso) {
-  // 'YYYY-MM-DDTHH:MM:SSZ' → 'YYYY-MM-DD HH:MM:SS' for human-readable display.
-  return iso.replace('T', ' ').replace('Z', '');
+  // Locale-aware human-readable display of an ISO 8601 UTC timestamp.
+  // Uses the runtime locale (navigator.language) so the output format
+  // matches the datetime-local picker UI exactly:
+  //   en-US: '04/22/2026, 09:30:13 AM'
+  //   en-GB: '22/04/2026, 09:30:13'
+  // timeZone: 'UTC' preserves the UTC interpretation; the caller adds
+  // a ' UTC' suffix at the call site so the timezone is unambiguous.
+  return new Date(iso).toLocaleString([], {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC',
+  });
+}
+
+function formatInteger(value) {
+  // Display formatting for whole-number counts (e.g. share count). Same
+  // accounting notation as formatCurrency — comma thousands separators —
+  // so adjacent currency and count values read consistently.
+  if (typeof value !== 'number' || !Number.isFinite(value)) return '—';
+  return new Intl.NumberFormat('en-US').format(Math.floor(value));
+}
+
+function formatTimeOnly(iso) {
+  // Just the time portion of an ISO 8601 UTC timestamp, locale-formatted.
+  // Used for the eyebrow's second timestamp (same-day datasets — see init()
+  // for the multi-day caveat).
+  return new Date(iso).toLocaleString([], {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    timeZone: 'UTC',
+  });
 }
 
 function isoToPickerValue(iso) {
   // 'YYYY-MM-DDTHH:MM:SSZ' → 'YYYY-MM-DDTHH:MM' (the format
   // <input type="datetime-local"> expects).
   return iso.replace(/:\d{2}Z$/, '');
+}
+
+function formatPickerBound(pickerValue) {
+  // 'YYYY-MM-DDTHH:MM' → locale-formatted string for inline error messages.
+  // Uses the runtime locale (navigator.language) so the format matches the
+  // datetime-local picker's UI exactly: en-US shows "04/22/2026, 08:00 PM",
+  // en-GB shows "22/04/2026, 20:00", etc. timeZone: 'UTC' preserves the
+  // UTC interpretation (the app treats all picker values as UTC); the
+  // " UTC" suffix makes the timezone unambiguous to the reader.
+  const date = new Date(pickerValue + ':00Z');
+  const localised = date.toLocaleString([], {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'UTC',
+  });
+  return `${localised} UTC`;
 }

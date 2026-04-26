@@ -92,6 +92,17 @@ html {
   --pico-form-element-spacing-horizontal: 0.75rem;
 }
 
+/* Cap the main content column at a comfortable reading/form width
+   instead of letting Pico's `.container` stretch to its responsive
+   maximum (~1130px on wide viewports). 800px keeps the form,
+   eyebrow, and result panel proportionate without breaking the
+   form-result symmetry. Selector specificity matches Pico's
+   `.container` rule so source order (styles.css after Pico) wins. */
+main.container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
 /* Headline: three stacked pills (one word each), contrasting colorway
    per the brand guide (charcoal/white/neon top to bottom, left-aligned). */
 .headline-stack {
@@ -164,6 +175,39 @@ label {
   color: var(--text-primary);
 }
 
+/* Date range: From + To side-by-side on wide viewports, stacked on
+   narrow ones. The 700px breakpoint is the natural transition point
+   for two datetime-local inputs to fit comfortably without
+   truncation. */
+.date-range {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+@media (min-width: 700px) {
+  .date-range {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+  .date-range > * {
+    flex: 1;
+  }
+}
+
+/* From / To label TEXT is non-clickable: the user explicitly should
+   not focus or open the picker by clicking the label word. Native
+   <label> click bubbles to the associated input via for=/wrapping;
+   pointer-events: none on the label suppresses that for the label
+   itself, while the input keeps pointer-events: auto so direct
+   clicks on the field still open the picker. Accessibility (label
+   association for screen readers) is preserved by the wrapping. */
+.date-range label {
+  pointer-events: none;
+}
+.date-range label input {
+  pointer-events: auto;
+}
+
 /* Result-window line: small muted-charcoal pre-amble above the
    result sentence. Mirrors the eyebrow's bullet/arrow shape so the
    reader can correlate "available range" (eyebrow) with "requested
@@ -208,6 +252,19 @@ label {
 .error {
   color: var(--text-muted);
   font-weight: 600;
+}
+/* Per-field client-side validity message under each date input.
+   Same muted-charcoal as the form's submit-time error to keep the
+   visual treatment consistent — no red, on-brand.
+   `small.field-error` (instead of bare `.field-error`) bumps specificity
+   above Pico v2's `[aria-invalid="true"] + small` rule which colours
+   the text Pico's `--pico-del-color` (red). */
+small.field-error {
+  display: block;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
 }
 .intro {
   color: var(--pico-muted-color);

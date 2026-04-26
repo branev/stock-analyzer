@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -34,31 +34,37 @@
         </p>
         <form @submit.prevent="analyse">
           <fieldset>
-            <label for="from">
-              From
-              <input
-                type="datetime-local"
-                id="from"
-                x-model="form.from"
-                :min="form.minLocal"
-                :max="form.maxLocal"
-                :aria-invalid="invalidDateError ? 'true' : null"
-                @click="$event.target.showPicker?.()"
-              />
-            </label>
+            <div class="date-range">
+              <label for="from">
+                From
+                <input
+                  type="datetime-local"
+                  id="from"
+                  lang="en-GB"
+                  x-model="form.from"
+                  :min="form.minLocal"
+                  :max="form.to || form.maxLocal"
+                  :aria-invalid="(invalidDateError || fromError) ? 'true' : null"
+                  @click="$event.target.showPicker?.()"
+                />
+                <small x-show="fromError" x-text="fromError" class="field-error"></small>
+              </label>
 
-            <label for="to">
-              To
-              <input
-                type="datetime-local"
-                id="to"
-                x-model="form.to"
-                :min="form.minLocal"
-                :max="form.maxLocal"
-                :aria-invalid="invalidDateError ? 'true' : null"
-                @click="$event.target.showPicker?.()"
-              />
-            </label>
+              <label for="to">
+                To
+                <input
+                  type="datetime-local"
+                  id="to"
+                  lang="en-GB"
+                  x-model="form.to"
+                  :min="form.from || form.minLocal"
+                  :max="form.maxLocal"
+                  :aria-invalid="(invalidDateError || toError) ? 'true' : null"
+                  @click="$event.target.showPicker?.()"
+                />
+                <small x-show="toError" x-text="toError" class="field-error"></small>
+              </label>
+            </div>
 
             <label for="funds">
               Available funds (USD, optional)
@@ -66,7 +72,7 @@
                 type="number"
                 id="funds"
                 min="0"
-                step="0.01"
+                step="1"
                 x-model.number="form.funds"
                 placeholder="e.g. 1000"
               />
@@ -107,11 +113,11 @@
               Buy at
               <strong x-text="formatPickerTime(state.result.buy.time) + ' UTC'"></strong>
               for
-              <strong x-text="formatCurrency(state.result.buy.price)"></strong>,
+              <strong x-text="formatCurrency(state.result.buy.price)"></strong>,<br />
               sell at
               <strong x-text="formatPickerTime(state.result.sell.time) + ' UTC'"></strong>
               for
-              <strong x-text="formatCurrency(state.result.sell.price)"></strong>,
+              <strong x-text="formatCurrency(state.result.sell.price)"></strong>,<br />
               profit
               <strong x-text="formatCurrency(state.result.profitPerShare)"></strong>
               per share.
@@ -121,7 +127,7 @@
               With
               <strong x-text="formatCurrency(form.funds)"></strong>
               you could have bought
-              <strong x-text="sharesAffordable"></strong>
+              <strong x-text="formatInteger(sharesAffordable)"></strong>
               shares for
               <strong x-text="formatCurrency(totalProfit)"></strong>
               total profit.
@@ -137,7 +143,7 @@
                 <template x-if="hasFunds">
                   <li>
                     Shares affordable:
-                    <strong x-text="sharesAffordable"></strong>
+                    <strong x-text="formatInteger(sharesAffordable)"></strong>
                     (<span x-text="formatCurrency(form.funds)"></span>
                     ÷
                     <span x-text="formatCurrency(state.result.buy.price)"></span>,
@@ -148,7 +154,7 @@
                   <li>
                     Total profit:
                     <strong x-text="formatCurrency(totalProfit)"></strong>
-                    (<span x-text="sharesAffordable"></span>
+                    (<span x-text="formatInteger(sharesAffordable)"></span>
                     ×
                     <span x-text="formatCurrency(state.result.profitPerShare)"></span>)
                   </li>
