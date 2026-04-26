@@ -1,6 +1,6 @@
 # Branding — Tasks
 
-> **Status:** In progress.
+> **Status:** Complete — commit `67e187f` (`style: apply branded visual identity (palette, typography, pill headline)`).
 
 Sequential execution checklist. Work top-to-bottom. Each task should leave the working tree in a state where lint, typecheck, and test still pass.
 
@@ -446,17 +446,17 @@ Conventions:
 
 ## Section L — Verify and commit
 
-- [ ] **L1.** Run `npm run lint`. Must be clean.
-- [ ] **L2.** Run `npm run typecheck`. Must be clean.
-- [ ] **L3.** Run `npm test`. Must be all green (no source TypeScript changed; tests should pass unchanged).
-- [ ] **L4.** Run `npm run build`. Must be clean. Confirm `dist/` still builds correctly (no static-asset path regressions).
-- [ ] **L5.** Run `npm audit --audit-level=high`. Must report zero vulnerabilities.
-- [ ] **L6.** `git status` review:
+- [x] **L1.** Run `npm run lint`. Must be clean.
+- [x] **L2.** Run `npm run typecheck`. Must be clean.
+- [x] **L3.** Run `npm test`. Must be all green (no source TypeScript changed; tests should pass unchanged).
+- [x] **L4.** Run `npm run build`. Must be clean. Confirm `dist/` still builds correctly (no static-asset path regressions).
+- [x] **L5.** Run `npm audit --audit-level=high`. Must report zero vulnerabilities.
+- [x] **L6.** `git status` review:
   - Confirm new files staged: `public/styles.css`, `public/vendor/inter/inter-latin-var.woff2`, `docs/design_changes/requirements.md`, `docs/design_changes/tasks.md`, `docs/design_changes/stock-analyzer-design-instructions.md`.
   - Confirm modified files staged: `public/index.html`, `public/app.js`.
   - Confirm no stray scratch files or accidental commits of local screenshots.
   - **Note:** `README.md` is **not** in this stage list — Section K skipped per user decision; no Acknowledgments bullet added.
-- [ ] **L7.** Stage explicitly (no `git add .`):
+- [x] **L7.** Stage explicitly (no `git add .`):
   - `public/styles.css` (new).
   - `public/vendor/inter/inter-latin-var.woff2` (new — single variable-font file covers weights 400-700).
   - `public/index.html` (modified — pill markup, stylesheet link, F2.5 result-window line, G4 displayedError binding).
@@ -464,15 +464,15 @@ Conventions:
   - `docs/design_changes/requirements.md` (new).
   - `docs/design_changes/tasks.md` (new).
   - `docs/design_changes/stock-analyzer-design-instructions.md` (new).
-- [ ] **L8.** **Show before committing:** `git status`, `git log --oneline -5`, and the staged diff (`git diff --staged` — limit to non-binary files; the woff2 is binary). Wait for explicit user approval before running `git commit`.
-- [ ] **L9.** Commit with message: `style: apply branded visual identity (palette, typography, pill headline)`. Body summarises:
+- [x] **L8.** **Show before committing:** `git status`, `git log --oneline -5`, and the staged diff (`git diff --staged` — limit to non-binary files; the woff2 is binary). Wait for explicit user approval before running `git commit`.
+- [x] **L9.** Commit with message: `style: apply branded visual identity (palette, typography, pill headline)`. Body summarises:
   - The seven decisions from `requirements.md` and any sub-decisions resolved during implementation (G2 invalid-state — neon outline ring after 2px-charcoal fallback read as no-signal; E2 disabled-button — opacity 0.7 instead of 0.5 for WCAG AA; J5 muted-charcoal adjustment if any).
   - Self-hosted Inter as a single variable-font file under `public/vendor/inter/`.
   - The 10-item browser sweep + 5-item contrast check both passed.
   - Show-math accordion summary fix (Pico v2's `--pico-accordion-active-summary-color` was inheriting our overridden `--pico-primary-hover`; pinned to charcoal).
   - Post-Phase-7 polish note: this commit applies a visual theme to the existing analyzer; no API, algorithm, or test changes.
-- [ ] **L10.** Confirm pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update `docs/design_changes/requirements.md` and `docs/design_changes/tasks.md` status headers to `Complete — commit <hash>`. Retroactively flip L6/L7/L8/L9/L10 to `[x]` per CLAUDE.md's task-tracking rule (folds into a subsequent commit, not its own).
-- [ ] **L11.** Stop for user push approval. Do **not** push without explicit confirmation per the project's established flow.
+- [x] **L10.** Confirm pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update `docs/design_changes/requirements.md` and `docs/design_changes/tasks.md` status headers to `Complete — commit <hash>`. Retroactively flip L6/L7/L8/L9/L10 to `[x]` per CLAUDE.md's task-tracking rule (folds into a subsequent commit, not its own).
+- [x] **L11.** Stop for user push approval. Do **not** push without explicit confirmation per the project's established flow.
 
 ---
 

@@ -1,6 +1,6 @@
 # Branding — Requirements
 
-> **Status:** In progress.
+> **Status:** Complete — commit `67e187f` (`style: apply branded visual identity (palette, typography, pill headline)`).
 
 Local contract for applying the brand's visual identity to the analyzer's existing frontend. Companion to [`stock-analyzer-design-instructions.md`](stock-analyzer-design-instructions.md) (the brand spec) — that doc is _what_ the visual system looks like; this doc is _what changes in our codebase_, _what stays out_, and _what we deliberately defer or modify_ relative to the brand spec.
 
