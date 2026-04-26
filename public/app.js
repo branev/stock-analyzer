@@ -6,7 +6,7 @@
 
 document.addEventListener('alpine:init', () => {
   Alpine.data('analyzer', () => ({
-    header: { title: 'Loading…', coverage: 'Loading coverage period…' },
+    header: { coverage: 'Loading coverage period…' },
     form: { from: '', to: '', funds: '', minLocal: '', maxLocal: '' },
     state: {
       loading: false,
@@ -25,8 +25,12 @@ document.addEventListener('alpine:init', () => {
         }
         const data = await res.json();
         this.dataset = data;
-        this.header.title = `${data.symbol} — ${data.name}`;
-        this.header.coverage = `Available data for the period between ${formatPickerTime(data.from)} UTC and ${formatPickerTime(data.to)} UTC.`;
+        // Eyebrow line: "<name> • <from> UTC → <time-of-to> UTC".
+        // The .split(' ')[1] extracts just the time portion of the second
+        // timestamp because the dataset is a single trading day. If a
+        // future dataset spans multiple days, render the full date on both
+        // sides instead.
+        this.header.coverage = `${data.name} • ${formatPickerTime(data.from)} UTC → ${formatPickerTime(data.to).split(' ')[1]} UTC`;
         this.form.minLocal = isoToPickerValue(data.from);
         this.form.maxLocal = isoToPickerValue(data.to);
       } catch (err) {
@@ -75,6 +79,19 @@ document.addEventListener('alpine:init', () => {
         this.state.errorCode === 'INVALID_RANGE' ||
         this.state.errorCode === 'OUT_OF_BOUNDS'
       );
+    },
+
+    // For OUT_OF_BOUNDS only, append the dataset's available range to the
+    // API's message so the user has the valid window right next to the
+    // error — they don't have to scroll back up to the eyebrow line.
+    // Other error codes get the unmodified API message.
+    get displayedError() {
+      if (!this.state.error) return null;
+      if (this.state.errorCode !== 'OUT_OF_BOUNDS') return this.state.error;
+      if (!this.dataset) return this.state.error;
+      const fromShort = formatPickerTime(this.dataset.from);
+      const toShort = formatPickerTime(this.dataset.to);
+      return `${this.state.error} Available range: ${fromShort} UTC → ${toShort} UTC.`;
     },
 
     async analyse() {

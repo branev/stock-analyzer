@@ -13,7 +13,7 @@ Produce reviewer-facing materials so the take-home can be evaluated end-to-end f
 ## Out of scope (explicitly)
 
 - **Frontend redesign.** Pico defaults are the brief's expectation. Any visual rework is post-Phase-7 if time permits.
-- **LucidLink branding.** Conditional on Figma guideline permitting external use; if pursued, it's post-Phase-7 work, not Phase 7 itself.
+- **Visual rebrand.** Conditional on Figma guideline permitting external use; if pursued, it's post-Phase-7 work, not Phase 7 itself.
 - New endpoints, algorithm changes, or test additions for behaviours that aren't already in scope.
 
 ---

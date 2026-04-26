@@ -1,0 +1,227 @@
+/* Inter (variable font, latin subset).
+   One file covers weights 400-700; the wght axis lets the browser
+   interpolate any weight in that range from the single binary.
+   Source: fonts.gstatic.com Inter v20, latin Unicode range
+   (U+0000-00FF + extras). Vendored to avoid runtime third-party
+   font fetches and to keep the CSP locked at script-src 'self'. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('vendor/inter/inter-latin-var.woff2') format('woff2');
+}
+
+/* Cancel Pico v2's responsive root-font-size bump so the page stays
+   compact on large viewports (Pico scales root from 100% → 131.25%
+   between 576px and 1400px breakpoints, which inflates every rem
+   value and pushes content below the fold). Locking to 100% keeps
+   the form + result visible on a typical 768-1080px-tall laptop
+   viewport without scrolling. */
+:root,
+html {
+  font-size: 100%;
+}
+
+/* Selector specificity matches Pico v2's own scope
+   (:root:not([data-theme="dark"])) so our overrides win at equal
+   specificity via source order — styles.css follows Pico in <head>.
+   Plain :root would be outranked by Pico's light-theme block. */
+:root,
+:root:not([data-theme='dark']) {
+  /* Brand palette */
+  --brand-charcoal: #151519;
+  --brand-neon: #b0fb15;
+  --brand-white: #ffffff;
+  --brand-sand: #ebe8e0;
+  --brand-indigo: #5e53e0;
+
+  /* Surface roles */
+  --surface-page: var(--brand-sand);
+  --surface-card: var(--brand-white);
+  --text-primary: var(--brand-charcoal);
+  --text-muted: #5a5a60;
+  --accent: var(--brand-neon);
+  --accent-ink: var(--brand-charcoal);
+  --warning: var(--brand-indigo);
+
+  /* Type scale — leading and tracking from brand guide */
+  --leading-headline: 1.1;
+  --leading-body: 1.4;
+  --leading-eyebrow: 1;
+  --tracking-eyebrow: 0.08em;
+
+  /* Map brand tokens onto Pico v2 variables so existing components
+     inherit the brand without per-component restyles.
+     Pico v2 splits "primary" into multiple variables: -primary is the
+     text/link colour, -primary-background is the button fill,
+     -primary-border the button border. Override all three so buttons
+     render as neon-on-charcoal end-to-end. */
+  --pico-background-color: var(--surface-page);
+  --pico-color: var(--text-primary);
+  --pico-primary: var(--accent);
+  --pico-primary-background: var(--accent);
+  --pico-primary-border: var(--accent);
+  --pico-primary-hover: #9be612;
+  --pico-primary-hover-background: #9be612;
+  --pico-primary-hover-border: #9be612;
+  --pico-primary-inverse: var(--accent-ink);
+  --pico-primary-focus: rgba(176, 251, 21, 0.4);
+  --pico-font-family-sans-serif:
+    'Inter', system-ui, -apple-system, sans-serif;
+  --pico-form-element-background-color: var(--surface-card);
+  --pico-form-element-border-color: var(--brand-charcoal);
+  --pico-form-element-focus-color: var(--accent);
+
+  /* Accordion (<details><summary>) — Pico defaults route the
+     "active" / open / hover summary colour through --pico-primary-hover
+     which we set to neon. That makes the "Show math" toggle flash
+     green on click and stick green while hovered. Brand spec rules
+     out neon for non-button accents. Pin all three accordion summary
+     states to charcoal so the toggle is visually neutral. */
+  --pico-accordion-active-summary-color: var(--text-primary);
+  --pico-accordion-open-summary-color: var(--text-primary);
+  --pico-accordion-close-summary-color: var(--text-primary);
+
+  /* Compact pass: tighten Pico's spacing rhythm so form + result
+     fit on one viewport. Pico's defaults are generous; we want
+     dense-but-not-cramped. Reductions are eyeballed against the
+     1366×768 / 1440×900 / 1920×1080 typical laptop sizes. */
+  --pico-block-spacing-vertical: 1rem;
+  --pico-form-element-spacing-vertical: 0.5rem;
+  --pico-form-element-spacing-horizontal: 0.75rem;
+}
+
+/* Headline: three stacked pills (one word each), contrasting colorway
+   per the brand guide (charcoal/white/neon top to bottom, left-aligned). */
+.headline-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  margin-bottom: 0.75rem;
+}
+.pill {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 999px;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.1;
+}
+.pill--charcoal {
+  background: var(--brand-charcoal);
+  color: var(--brand-white);
+}
+.pill--white {
+  background: var(--brand-white);
+  color: var(--brand-charcoal);
+}
+.pill--neon {
+  background: var(--brand-neon);
+  color: var(--brand-charcoal);
+}
+
+/* Analyse button: filled-neon pill. Overrides Pico's default
+   button corner-radius (small) to a full pill (999px) — the headline
+   uses pills too, so the button reads as the same family of element. */
+button[type='submit'] {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border: none;
+  border-radius: 999px;
+  padding: 0.625rem 1.5rem;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+button[type='submit']:hover:not(:disabled) {
+  background: var(--pico-primary-hover);
+}
+button[type='submit']:disabled {
+  /* Opacity 0.7 instead of the conventional 0.5: at 0.5 the rendered
+     charcoal-on-neon-on-sand ratio falls to 3.25:1 (fails WCAG AA
+     for body text). 0.7 measures at 6.07:1. The cursor: not-allowed
+     reinforces the disabled signal. */
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Form: medium 10px corner radius on inputs (full pill is reserved
+   for headline pills and the Analyse button). Labels in semi-bold
+   Inter at charcoal — Pico's default label colour is muted, which
+   reads as low-priority for the brand's strong typography rhythm. */
+input[type='datetime-local'],
+input[type='number'] {
+  border-radius: 10px;
+}
+label {
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Result-window line: small muted-charcoal pre-amble above the
+   result sentence. Mirrors the eyebrow's bullet/arrow shape so the
+   reader can correlate "available range" (eyebrow) with "requested
+   window" (result) at a glance. */
+.result-window {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+/* Eyebrow line beneath the headline pills — small, semi-bold,
+   muted-charcoal, sentence case (no uppercase transform). Carries
+   ticker name + coverage period in the page-load passive context. */
+.eyebrow {
+  line-height: var(--leading-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: none;
+  font-weight: 700;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+}
+
+/* Reserved for future use: indigo-tinted informational banner.
+   Wire up only when the API gains a `warnings` field with `DATA_GAP`
+   or similar non-error signals. The current API never emits warnings;
+   keeping the class declared so the visual treatment is ready when
+   the field arrives. Do not add markup that uses this class until
+   then. */
+.warning-banner {
+  background: #eceafa;
+  color: var(--brand-charcoal);
+  border-left: 3px solid var(--warning);
+  padding: 0.875rem 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  margin-bottom: 1rem;
+}
+
+.error {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+.intro {
+  color: var(--pico-muted-color);
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+/* Invalid-state outline on date pickers: 2px neon ring with offset.
+   Brand spec rules out red anywhere; the originally-planned 2px
+   charcoal border read as "no signal" against the default 1.3px
+   charcoal border at high-DPI rendering. Neon outline + offset is
+   the requirements.md G2 fallback — it stays on-brand while clearly
+   marking the invalid pair. */
+input[type='datetime-local'][aria-invalid='true'] {
+  outline: 2px solid var(--accent) !important;
+  outline-offset: 2px;
+}

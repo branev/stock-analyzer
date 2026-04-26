@@ -110,7 +110,7 @@ The two-rule self-review (_what bug does this catch?_ + _which path does it exer
 - Custom domain, TLS configuration beyond Railway's defaults — not needed for the take-home.
 - Auto-scaling, multi-region, blue/green — single instance is the brief.
 - Observability dashboards, log aggregation beyond Railway's built-in log viewer — out of scope.
-- Branding (LucidLink) — Phase 7 conditional on Figma guideline permitting external use.
+- Visual rebrand — Phase 7 conditional on Figma guideline permitting external use.
 - Dependabot triage — deferred to Phase 7.
 
 ## Out of test scope

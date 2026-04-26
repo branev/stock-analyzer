@@ -9,23 +9,7 @@
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
     <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     <link rel="stylesheet" href="vendor/pico-2.0.6.min.css" />
-    <style>
-      .error {
-        color: #d62828;
-        font-weight: 600;
-      }
-      .intro {
-        color: var(--pico-muted-color);
-        margin-bottom: 1rem;
-      }
-      /* Pico v2's [aria-invalid=true] rule sets --pico-border-color but the
-         datetime-local input border actually consumes
-         --pico-form-element-border-color. Override directly so date pickers
-         get a red border on INVALID_RANGE / OUT_OF_BOUNDS. */
-      input[type='datetime-local'][aria-invalid='true'] {
-        border-color: var(--pico-form-element-invalid-border-color) !important;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
     <!-- app.js MUST load before alpine.js. Both have defer so they execute in
          document order after parsing. app.js registers an alpine:init listener
          which Alpine fires during its auto-start; if alpine.js loaded first,
@@ -36,10 +20,12 @@
   <body>
     <main class="container" x-data="analyzer">
       <header>
-        <hgroup>
-          <h1 x-text="header.title">Loading…</h1>
-          <p x-text="header.coverage">Loading coverage period…</p>
-        </hgroup>
+        <div class="headline-stack">
+          <span class="pill pill--charcoal">Stock</span>
+          <span class="pill pill--white">price</span>
+          <span class="pill pill--neon">analyzer</span>
+        </div>
+        <p class="eyebrow" x-text="header.coverage">Loading coverage period…</p>
       </header>
 
       <section>
@@ -94,7 +80,7 @@
 
           <p
             x-show="state.error"
-            x-text="state.error"
+            x-text="displayedError"
             role="alert"
             class="error"
           ></p>
@@ -111,6 +97,12 @@
 
         <template x-if="state.result">
           <div>
+            <p class="result-window">
+              For window
+              <span x-text="formatPickerTime(state.result.window.from) + ' UTC'"></span>
+              →
+              <span x-text="formatPickerTime(state.result.window.to) + ' UTC'"></span>:
+            </p>
             <p>
               Buy at
               <strong x-text="formatPickerTime(state.result.buy.time) + ' UTC'"></strong>
