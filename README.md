@@ -12,7 +12,7 @@ The dataset is a synthetic intraday tick series for a fictional ticker called **
 
 The application is a single NestJS process serving both the static frontend and the JSON API from the **same origin**. Internally the structure is intentionally flat: a top-level `AppModule` registers configuration validation (Zod via `@nestjs/config`), structured JSON logging (`nestjs-pino`), per-IP throttling (`@nestjs/throttler` — 60/min on `/api/analyze`, 120/min on `/api/dataset`, `/health` skipped), and a single feature module — `DataModule` — that exposes `PriceRepository` (currently backed by `FilePriceRepository`, swappable). The three HTTP controllers (`AnalyzeController`, `DatasetController`, `HealthController`) belong to `AppModule` directly, kept un-modulised because there's a single bounded context. The algorithm itself is a pure function the analyze controller calls — not wrapped in a NestJS module because there's nothing to inject.
 
-Cross-cutting concerns sit around the request flow rather than inside it: **Helmet** sets a strict CSP with two carve-outs from defaults — `style-src 'self' 'unsafe-inline'` for Pico CSS's inline form-element styles, and `script-src 'self' 'unsafe-eval'` because Alpine.js v3 evaluates every `x-*` directive expression at runtime via `new Function(...)` (without `'unsafe-eval'`, every directive throws and the page fails to render — verified empirically by removing the carve-out and observing 20+ `EvalError` exceptions and a stuck "Loading…" placeholder); **structured JSON logging** via `nestjs-pino` runs in every environment with no pretty-printer (dev/prod log parity); **error envelopes** are uniform — `{ statusCode, error, message, code }` where `code` is one of `INVALID_TIMESTAMP`, `INVALID_RANGE`, `OUT_OF_BOUNDS`, `DATA_UNAVAILABLE`, `INTERNAL_ERROR`; **same-origin** static + API serving means **no CORS middleware** is needed and none is configured.
+Cross-cutting concerns sit around the request flow rather than inside it: **Helmet** sets a strict CSP with two carve-outs from defaults — `style-src 'self' 'unsafe-inline'` for Pico CSS's inline form-element styles, and `script-src 'self' 'unsafe-eval'` because Alpine.js v3 evaluates every `x-*` directive expression at runtime via `new Function(...)` (without `'unsafe-eval'`, every directive throws and the page fails to render — verified empirically by removing the carve-out and observing 20+ `EvalError` exceptions and a stuck "Loading…" placeholder); **structured JSON logging** via `nestjs-pino` runs in every environment with no pretty-printer (dev/prod log parity); **error envelopes** are uniform — `{ statusCode, error, message, code }` (full code table in the [API](#api) section below); **same-origin** static + API serving means **no CORS middleware** is needed and none is configured.
 
 ```mermaid
 flowchart LR
@@ -33,6 +33,51 @@ flowchart LR
 ```
 
 For deeper rationale see [`docs/01-stock-analyzer-analysis.md`](docs/01-stock-analyzer-analysis.md). For the contract see [`docs/02-stock-analyzer-brief.md`](docs/02-stock-analyzer-brief.md).
+
+## API
+
+Three endpoints, all same-origin, all returning JSON.
+
+- `GET /api/analyze?from=...&to=...` — returns the optimal buy/sell pair within the window. Timestamps must be second-precision UTC ISO 8601 (`yyyy-MM-ddTHH:mm:ssZ`). Throttled at 60 requests/minute per IP.
+- `GET /api/dataset` — dataset metadata: symbol, name, currency, coverage period, tick interval. Throttled at 120 requests/minute per IP.
+- `GET /health` — liveness check. Outside the `/api` prefix; not throttled.
+
+### Happy path example
+
+```
+GET /api/analyze?from=2026-04-22T09:30:00Z&to=2026-04-22T15:59:59Z
+```
+
+Response (200):
+
+```json
+{
+  "window": { "from": "2026-04-22T09:30:00Z", "to": "2026-04-22T15:59:59Z" },
+  "buy": { "time": "2026-04-22T09:30:13Z", "price": 107.89 },
+  "sell": { "time": "2026-04-22T11:39:22Z", "price": 129.43 },
+  "profitPerShare": 21.54
+}
+```
+
+When no profitable trade exists in the window (flat or strictly descending prices), `buy`, `sell`, and `profitPerShare` are all `null`.
+
+### Errors
+
+All errors return a uniform envelope: `{ statusCode, error, message, code }`. Verified codes (every emission site is in [`src/api/exception-filter.ts`](src/api/exception-filter.ts)):
+
+| `code`              | HTTP | Trigger                                                            |
+| ------------------- | ---- | ------------------------------------------------------------------ |
+| `INVALID_TIMESTAMP` | 400  | Timestamp not in `yyyy-MM-ddTHH:mm:ssZ` (e.g. sub-second `.500Z`). |
+| `INVALID_RANGE`     | 400  | `from >= to`.                                                      |
+| `OUT_OF_BOUNDS`     | 400  | Window falls outside the dataset's coverage period.                |
+| `DATA_UNAVAILABLE`  | 500  | Dataset file missing or fails the boot-time integrity check.       |
+| `INTERNAL_ERROR`    | 500  | Unhandled exception (no stack trace leaked).                       |
+
+`429 Too Many Requests` (throttler) and `404 Not Found` (unmatched routes) pass through with their native shapes, not the envelope.
+
+## Frontend
+
+The page at the live URL is a single Alpine.js + Pico CSS view served from the same origin. Stock metadata loads on page open via `GET /api/dataset`; the form constrains date pickers to the dataset's coverage window; submitting the form calls `GET /api/analyze` and renders the result inline. Visual identity applied via Pico CSS variable overrides — palette, typography, pill graphic device. Frontend code is in [`public/`](public/).
 
 ## Run locally
 
