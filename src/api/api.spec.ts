@@ -196,6 +196,19 @@ describe('API integration', () => {
       expect(res.body.code).toBe('INVALID_TIMESTAMP');
     });
 
+    it('rejects a regex-passing but Date-invalid timestamp with INVALID_TIMESTAMP', async () => {
+      // Strings that match the DTO's regex but produce NaN from new Date().
+      // Without the @IsRealDate guard on the DTO they slip past validation,
+      // fail the controller's from < to comparison silently (NaN comparisons
+      // are always false), and surface as OUT_OF_BOUNDS at the repository's
+      // tick-grid alignment check. See Bug 2.1 / Gap 2.1 in docs/reviews/.
+      const res = await request(app.getHttpServer())
+        .get('/api/analyze')
+        .query({ from: '2026-13-01T00:00:00Z', to: '2026-04-22T15:59:59Z' })
+        .expect(400);
+      expect(res.body.code).toBe('INVALID_TIMESTAMP');
+    });
+
     it('rejects from === to with INVALID_RANGE', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/analyze')

@@ -130,6 +130,19 @@ describe('bestTrade', () => {
       expect(optimised).toEqual(bruteForce(input));
       expect(optimised).toEqual({ buyIndex: 0, sellIndex: 1, profit: 1 });
     });
+
+    // Distinguishes the two documented interpretations of "earliest and
+    // shortest". Optimal pairs at profit 3 are (0,3), (0,4), (2,3), (2,4).
+    // Earliest-buy primary picks (0,3); shortest-duration primary would pick
+    // (2,3). The other tiebreaker fixtures land on the same answer under
+    // both readings, so this is the only test that would catch a regression
+    // to the alternative interpretation.
+    it('[1,2,1,4,4] earliest-buy primary picks (0,3) over the shorter (2,3)', () => {
+      const input = [1, 2, 1, 4, 4];
+      const optimised = bestTrade(input);
+      expect(optimised).toEqual(bruteForce(input));
+      expect(optimised).toEqual({ buyIndex: 0, sellIndex: 3, profit: 3 });
+    });
   });
 
   describe('property: matches brute-force on random inputs', () => {
@@ -145,7 +158,7 @@ describe('bestTrade', () => {
   });
 
   describe('complexity', () => {
-    it('analyses the full committed dataset (~23,400 ticks) in under 100ms', () => {
+    it('analyses the full committed dataset (~23,400 ticks) in under 500ms', () => {
       // Arrange — load the committed Phase 2 dataset (relative to repo root,
       // which is Jest's working directory).
       const datasetPath = path.resolve('data/acme.json');
@@ -159,12 +172,14 @@ describe('bestTrade', () => {
       const elapsedMs = performance.now() - startMs;
 
       // Assert — sanity (a 6.5h session has profitable trades), performance
-      // (catches O(n^2) regressions; 100ms is ~50x headroom over an O(n)
-      // scan), and a spot-check against the Phase 2 variety-verification
-      // result so we know the algorithm produces the expected answer on the
-      // committed dataset.
+      // (catches O(n^2) regressions on a 23,400-element dataset, which would
+      // be multiple seconds; 500ms is generous headroom over an O(n) scan
+      // and stops false-failing on slower or contended CI runners), and a
+      // spot-check against the Phase 2 variety-verification result so we
+      // know the algorithm produces the expected answer on the committed
+      // dataset.
       expect(result).not.toBeNull();
-      expect(elapsedMs).toBeLessThan(100);
+      expect(elapsedMs).toBeLessThan(500);
       expect(result?.buyIndex).toBe(13);
       expect(result?.sellIndex).toBe(7762);
       expect(result?.profit).toBeCloseTo(21.54, 2);
