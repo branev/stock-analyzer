@@ -15,6 +15,12 @@ async function bootstrap() {
   });
   app.useLogger(app.get(PinoLogger));
 
+  // Trust the single reverse-proxy hop in front of us (Railway, or any future
+  // PaaS) so Express reads the real client IP from X-Forwarded-For. Without
+  // this, the throttler keys per-IP buckets on the proxy's loopback address
+  // and every client shares one bucket — collapsing rate limiting entirely.
+  app.set('trust proxy', 1);
+
   // Helmet defaults plus a CSP tuned for our two committed vendor libraries.
   // - style-src 'unsafe-inline' is required by Pico CSS, which applies inline
   //   style attributes to a few form elements.
