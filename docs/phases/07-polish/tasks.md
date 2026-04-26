@@ -1,6 +1,6 @@
 # Phase 7 — Documentation, Postman Collection, and Polish
 
-> **Status:** In progress.
+> **Status:** Complete — commit `1734184` (`docs: add README, Postman collection, and close Phase 7`).
 
 Final phase. Lighter than Phases 2–6: a single `tasks.md` (no separate `requirements.md`) — this doc is the spec. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`.
 
@@ -121,9 +121,9 @@ Produce reviewer-facing materials so the take-home can be evaluated end-to-end f
 
 - [x] **D2.** **Phase 6 status header update.** In `docs/phases/06-deploy/requirements.md`, change `Status: In progress.` to `Status: Complete — commit d8f2bb7 (chore: deploy to Railway and verify end-to-end on live URL).`
 
-- [ ] **D3.** **Phase 7 status header update (deferred to F-section commit).** Once Phase 7's commit lands, the next push retroactively flips Phase 7's status header to Complete. Leave this for after F1-F8 close out.
+- [x] **D3.** **Phase 7 status header update (deferred to F-section commit).** Once Phase 7's commit lands, the next push retroactively flips Phase 7's status header to Complete. Leave this for after F1-F8 close out.
 
-- [ ] **D4.** **Phase 7 task ticks.** Tick A1-A12, B1-B6, C1-C5 (or the subset executed), and D1-D2 as each completes. F-section ticks (F1-F7) flip retroactively along with D3 in a future commit.
+- [x] **D4.** **Phase 7 task ticks.** Tick A1-A12, B1-B6, C1-C5 (or the subset executed), and D1-D2 as each completes. F-section ticks (F1-F7) flip retroactively along with D3 in a future commit.
 
 ---
 
@@ -148,15 +148,15 @@ Produce reviewer-facing materials so the take-home can be evaluated end-to-end f
 - [x] **F3.** Run `npm test`. Must be all green (163 tests, 6 suites — or whatever count is current). **163 tests / 6 suites.**
 - [x] **F4.** Run `npm run build`. Must be clean.
 - [x] **F5.** Run `npm audit --audit-level=high`. Must report zero vulnerabilities at this level. **0 vulnerabilities.**
-- [ ] **F6.** **Show me before committing:** `git status`, `git log --oneline -10`, and the staged diff (`git diff --staged`). Wait for explicit approval before running `git commit`.
-- [ ] **F7.** Stage explicitly (no `git add .`):
+- [x] **F6.** **Show me before committing:** `git status`, `git log --oneline -10`, and the staged diff (`git diff --staged`). Wait for explicit approval before running `git commit`.
+- [x] **F7.** Stage explicitly (no `git add .`):
   - `README.md` (full content replacing the Phase 6 placeholder).
   - `docs/stock-analyzer.postman_collection.json` (new).
   - `docs/phases/06-deploy/requirements.md` (D2 status-header update).
   - `docs/phases/06-deploy/tasks.md` (D1 J6-J9 ticks).
   - `docs/phases/07-polish/tasks.md` (status header update + all ticks accumulated through the phase).
   - Any Dependabot PRs merged in E (already on main via PR merges, so not staged here).
-- [ ] **F8.** Commit with message exactly: `docs: add README, Postman collection, and close Phase 7`. Body summarises:
+- [x] **F8.** Commit with message exactly: `docs: add README, Postman collection, and close Phase 7`. Body summarises:
   - What's in the README (sections A1-A12 by topic, not verbatim list).
   - The Postman collection structure (4 folders, 9 requests, `baseUrl` variable).
   - The history-review findings from C (clean / squashed / amended).
