@@ -1,0 +1,182 @@
+{
+  "info": {
+    "name": "Stock Price Analyzer",
+    "description": "Exercises every documented contract surface of the Stock Price Analyzer API.\n\n**Base URL.** Defaults to the deployed Railway URL (`https://stock-analyzer-production-b678.up.railway.app`). Override the `baseUrl` collection variable to point at `http://localhost:3000` if running the app locally via `npm run start:dev`.\n\n**Folders.**\n- **Health** — liveness check, no rate limiting.\n- **Metadata** — dataset coverage and intervalSeconds.\n- **Happy path** — full window plus three engineered sub-windows (trending AM, lunch lull, sell-off) demonstrating the algorithm on different price phases.\n- **Errors** — one request per documented error code (`INVALID_RANGE`, `OUT_OF_BOUNDS`, `INVALID_TIMESTAMP`).\n\nAll requests use second-precision UTC timestamps with the trailing `Z` suffix (e.g. `2026-04-22T09:30:00Z`). Sub-second precision is rejected with `INVALID_TIMESTAMP`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://stock-analyzer-production-b678.up.railway.app",
+      "type": "string",
+      "description": "Base URL of the Stock Price Analyzer. Defaults to the deployed Railway URL. Override to `http://localhost:3000` if running the app locally via `npm run start:dev`."
+    }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Liveness check. Expected 200 with `{\"status\":\"ok\"}`. Outside the `/api` prefix and skipped by the throttler."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Metadata",
+      "item": [
+        {
+          "name": "GET /api/dataset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/dataset",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dataset"]
+            },
+            "description": "Dataset metadata. Expected 200 with `{ symbol, name, currency, from, to, intervalSeconds }`. Throttled at 120 requests/minute per IP."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Happy path",
+      "item": [
+        {
+          "name": "Full window",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T09:30:00Z&to=2026-04-22T15:59:59Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T09:30:00Z" },
+                { "key": "to", "value": "2026-04-22T15:59:59Z" }
+              ]
+            },
+            "description": "Full trading day. Expected: buy at 09:30:13 / $107.89, sell at 11:39:22 / $129.43, profit $21.54 per share."
+          }
+        },
+        {
+          "name": "Trending AM sub-window",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T09:30:00Z&to=2026-04-22T11:00:00Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T09:30:00Z" },
+                { "key": "to", "value": "2026-04-22T11:00:00Z" }
+              ]
+            },
+            "description": "Morning trending phase. Expected: buy at 09:30:13 / $107.89, sell at 10:59:48 / $122.82, profit $14.93 per share."
+          }
+        },
+        {
+          "name": "Lunch lull sub-window",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T12:00:00Z&to=2026-04-22T13:00:00Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T12:00:00Z" },
+                { "key": "to", "value": "2026-04-22T13:00:00Z" }
+              ]
+            },
+            "description": "Midday flat phase. Expected: buy at 12:11:04 / $115.29, sell at 12:20:10 / $128.89, profit $13.60 per share. Demonstrates the algorithm finds non-trivial trades even in low-volatility windows."
+          }
+        },
+        {
+          "name": "Sell-off sub-window",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T14:00:00Z&to=2026-04-22T15:59:59Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T14:00:00Z" },
+                { "key": "to", "value": "2026-04-22T15:59:59Z" }
+              ]
+            },
+            "description": "Late-day sell-off phase. Expected: buy at 14:30:32 / $117.19, sell at 14:39:25 / $120.01, profit $2.82 per share. Smallest magnitude of the four — the dataset's downtrend gives few profitable opportunities here."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Errors",
+      "item": [
+        {
+          "name": "INVALID_RANGE - from equals to",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T10:00:00Z&to=2026-04-22T10:00:00Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T10:00:00Z" },
+                { "key": "to", "value": "2026-04-22T10:00:00Z" }
+              ]
+            },
+            "description": "`from` equals `to`, so there is no valid trade window. Expected 400 with `{ statusCode: 400, error: \"Bad Request\", message: \"from must be strictly less than to\", code: \"INVALID_RANGE\" }`."
+          }
+        },
+        {
+          "name": "OUT_OF_BOUNDS - window outside dataset",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2020-01-01T00:00:00Z&to=2020-01-02T00:00:00Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2020-01-01T00:00:00Z" },
+                { "key": "to", "value": "2020-01-02T00:00:00Z" }
+              ]
+            },
+            "description": "Window predates the dataset's coverage period entirely. Expected 400 with `code: \"OUT_OF_BOUNDS\"` and a message naming the window."
+          }
+        },
+        {
+          "name": "INVALID_TIMESTAMP - sub-second precision",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T09:30:00.500Z&to=2026-04-22T15:00:00Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T09:30:00.500Z" },
+                { "key": "to", "value": "2026-04-22T15:00:00Z" }
+              ]
+            },
+            "description": "`from` includes sub-second precision (`.500Z`). The DTO rejects anything other than `yyyy-MM-ddTHH:mm:ssZ` second-precision UTC. Expected 400 with `code: \"INVALID_TIMESTAMP\"`."
+          }
+        }
+      ]
+    }
+  ]
+}

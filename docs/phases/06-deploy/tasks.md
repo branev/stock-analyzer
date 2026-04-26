@@ -130,18 +130,18 @@ If either E2 or E3 fails, fix the underlying issue, push, wait for redeploy, re-
 - [x] **J3.** Run `npm test`. Must be all green. **163 tests in 6 suites passed.**
 - [x] **J4.** Run `npm run build`. Must be clean.
 - [x] **J5.** Run `npm audit --audit-level=high`. Must report zero vulnerabilities at this level. **0 vulnerabilities.**
-- [ ] **J6.** `git status` review:
+- [x] **J6.** `git status` review:
   - Confirm any new files (`railway.json`/`railway.toml` if Option (a), `README.md` if newly created, modified `package.json` if `prepare` was tweaked) are staged.
   - Confirm Phase 5 retroactive cleanup (status header confirmation in `05-frontend-and-security/requirements.md`, any retroactively flipped task ticks) is staged with this commit.
   - Confirm no stray scratch files (e.g. local curl-loop scripts, screenshot temp files) are accidentally staged.
-- [ ] **J7.** Stage explicitly (no `git add .`):
+- [x] **J7.** Stage explicitly (no `git add .`):
   - `railway.json` (committed config from B3).
   - `README.md` (new or modified).
   - `src/main.ts` (trust-proxy line from A2).
   - `package.json` (Husky `|| true` fix from A3).
   - `docs/phases/05-frontend-and-security/requirements.md` and `tasks.md` if any retroactive cleanup is needed.
   - `docs/phases/06-deploy/requirements.md` and `docs/phases/06-deploy/tasks.md`.
-- [ ] **J8.** Commit with message exactly: `chore: deploy to Railway and verify end-to-end on live URL`. Include a body that lists:
+- [x] **J8.** Commit with message exactly: `chore: deploy to Railway and verify end-to-end on live URL`. Include a body that lists:
   - Deployment configuration approach: committed `railway.json` (with the verified schema URL).
   - The deployed URL.
   - A summary of the 12 verification checks (all passed).
@@ -149,7 +149,7 @@ If either E2 or E3 fails, fix the underlying issue, push, wait for redeploy, re-
   - Any fixes applied during round-trip discipline (with commit hashes if separate, or "rolled into this commit" if applied before the final commit).
   - Phase 5 retroactive cleanup folded in (if any).
   - The J0 self-review outcome (likely no-op since no new tests were added).
-- [ ] **J9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 6 status header in `requirements.md` to `Complete — commit <hash>`. Retroactively flip J6/J7/J8/J9 to `[x]` per the CLAUDE.md task-tracking rule (folds into Phase 7's commit, not its own).
+- [x] **J9.** Confirm the pre-commit hook ran (lint-staged + typecheck) and the commit landed. Show `git log --oneline -3` and `git status`. Update the Phase 6 status header in `requirements.md` to `Complete — commit <hash>`. Retroactively flip J6/J7/J8/J9 to `[x]` per the CLAUDE.md task-tracking rule (folds into Phase 7's commit, not its own).
 - [ ] **J10.** `git push origin main`. Confirm CI green on the push (no source code changed materially, but the workflow re-runs).
 
 ---

@@ -1,6 +1,6 @@
 # Phase 6 — Deploy to Railway and Verify End-to-End
 
-> **Status:** In progress.
+> **Status:** Complete — commit `d8f2bb7` (`chore: deploy to Railway and verify end-to-end on live URL`).
 
 Local contract for Phase 6. Companion to the authoritative roadmap in `docs/03-implementation-plan.md`; this document is the per-phase scope agreement.
 
