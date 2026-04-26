@@ -45,6 +45,7 @@
                   :min="form.minLocal"
                   :max="form.to || form.maxLocal"
                   :aria-invalid="(invalidDateError || fromError) ? 'true' : null"
+                  @input="form.lastEdited = 'from'"
                   @click="$event.target.showPicker?.()"
                 />
                 <small x-show="fromError" x-text="fromError" class="field-error"></small>
@@ -60,6 +61,7 @@
                   :min="form.from || form.minLocal"
                   :max="form.maxLocal"
                   :aria-invalid="(invalidDateError || toError) ? 'true' : null"
+                  @input="form.lastEdited = 'to'"
                   @click="$event.target.showPicker?.()"
                 />
                 <small x-show="toError" x-text="toError" class="field-error"></small>

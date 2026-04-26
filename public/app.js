@@ -7,7 +7,7 @@
 document.addEventListener('alpine:init', () => {
   Alpine.data('analyzer', () => ({
     header: { coverage: 'Loading coverage period…' },
-    form: { from: '', to: '', funds: '', minLocal: '', maxLocal: '' },
+    form: { from: '', to: '', funds: '', minLocal: '', maxLocal: '', lastEdited: null },
     state: {
       loading: false,
       result: null,
@@ -86,26 +86,43 @@ document.addEventListener('alpine:init', () => {
       );
     },
 
-    // Per-field client-side range checks. The two pickers constrain each
-    // other (From's max = current To, To's min = current From), so a value
-    // that was valid a moment ago can become invalid when the other picker
-    // moves. Native browser validation only surfaces this on submit AND
-    // only on the first invalid field — these getters drive always-visible
-    // inline messages so both fields can show errors at the same time.
+    // Per-field client-side range checks. Two flavours of error per field:
+    //  (1) Dataset-bounds violation — the value is outside the dataset's
+    //      coverage period. Always flag on whichever field is at fault.
+    //  (2) Inversion violation — From > To. The pair is wrong, but only
+    //      one field is "the one the user just changed" and should carry
+    //      the message. We gate inversion errors on form.lastEdited so
+    //      the unchanged field stays quiet.
     get fromError() {
       if (!this.form.from || !this.dataset) return null;
-      const min = this.form.minLocal;
-      const max = this.form.to || this.form.maxLocal;
-      if (this.form.from < min) return `Must be ${formatPickerBound(min)} or later.`;
-      if (this.form.from > max) return `Must be ${formatPickerBound(max)} or earlier.`;
+      // Dataset-bounds — always flag.
+      if (this.form.from < this.form.minLocal)
+        return `Must be ${formatPickerBound(this.form.minLocal)} or later.`;
+      if (this.form.from > this.form.maxLocal)
+        return `Must be ${formatPickerBound(this.form.maxLocal)} or earlier.`;
+      // Inversion (from > to) — flag only if From was the last edited.
+      if (
+        this.form.to &&
+        this.form.from > this.form.to &&
+        this.form.lastEdited === 'from'
+      )
+        return `Must be ${formatPickerBound(this.form.to)} or earlier.`;
       return null;
     },
     get toError() {
       if (!this.form.to || !this.dataset) return null;
-      const min = this.form.from || this.form.minLocal;
-      const max = this.form.maxLocal;
-      if (this.form.to < min) return `Must be ${formatPickerBound(min)} or later.`;
-      if (this.form.to > max) return `Must be ${formatPickerBound(max)} or earlier.`;
+      // Dataset-bounds — always flag.
+      if (this.form.to < this.form.minLocal)
+        return `Must be ${formatPickerBound(this.form.minLocal)} or later.`;
+      if (this.form.to > this.form.maxLocal)
+        return `Must be ${formatPickerBound(this.form.maxLocal)} or earlier.`;
+      // Inversion (to < from) — flag only if To was the last edited.
+      if (
+        this.form.from &&
+        this.form.to < this.form.from &&
+        this.form.lastEdited === 'to'
+      )
+        return `Must be ${formatPickerBound(this.form.from)} or later.`;
       return null;
     },
 
