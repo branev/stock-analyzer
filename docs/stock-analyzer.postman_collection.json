@@ -1,15 +1,15 @@
 {
   "info": {
     "name": "Stock Price Analyzer",
-    "description": "Exercises every documented contract surface of the Stock Price Analyzer API.\n\n**Base URL.** Defaults to the deployed Railway URL (`https://stock-analyzer-production-b678.up.railway.app`). Override the `baseUrl` collection variable to point at `http://localhost:3000` if running the app locally via `npm run start:dev`.\n\n**Folders.**\n- **Health** — liveness check, no rate limiting.\n- **Metadata** — dataset coverage and intervalSeconds.\n- **Happy path** — full window plus three engineered sub-windows (trending AM, lunch lull, sell-off) demonstrating the algorithm on different price phases.\n- **Errors** — one request per documented error code (`INVALID_RANGE`, `OUT_OF_BOUNDS`, `INVALID_TIMESTAMP`).\n\nAll requests use second-precision UTC timestamps with the trailing `Z` suffix (e.g. `2026-04-22T09:30:00Z`). Sub-second precision is rejected with `INVALID_TIMESTAMP`.",
+    "description": "Exercises every documented contract surface of the Stock Price Analyzer API.\n\n**Base URL.** Defaults to `http://localhost:3000` — start the app locally with `npm run start:dev` before running these requests. (The collection previously defaulted to a hosted Railway deployment that has since been retired.)\n\n**Folders.**\n- **Health** — liveness check, no rate limiting.\n- **Metadata** — dataset coverage and intervalSeconds.\n- **Happy path** — full window plus three engineered sub-windows (trending AM, lunch lull, sell-off) demonstrating the algorithm on different price phases.\n- **Errors** — one request per documented error code (`INVALID_RANGE`, `OUT_OF_BOUNDS`, `INVALID_TIMESTAMP`).\n\nAll requests use second-precision UTC timestamps with the trailing `Z` suffix (e.g. `2026-04-22T09:30:00Z`). Sub-second precision is rejected with `INVALID_TIMESTAMP`.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "https://stock-analyzer-production-b678.up.railway.app",
+      "value": "http://localhost:3000",
       "type": "string",
-      "description": "Base URL of the Stock Price Analyzer. Defaults to the deployed Railway URL. Override to `http://localhost:3000` if running the app locally via `npm run start:dev`."
+      "description": "Base URL of the Stock Price Analyzer. Defaults to a local server started via `npm run start:dev`. (Previously defaulted to a hosted Railway deployment, since retired.)"
     }
   ],
   "item": [

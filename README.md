@@ -1,7 +1,5 @@
 # Stock Price Analyzer
 
-Live URL: https://stock-analyzer-production-b678.up.railway.app/
-
 A NestJS web app that finds the optimal buy/sell pair within a chosen time slice of an intraday price series, optimising profit per share.
 
 ## What it is
@@ -77,7 +75,7 @@ All errors return a uniform envelope: `{ statusCode, error, message, code }`. Ve
 
 ## Frontend
 
-The page at the live URL is a single Alpine.js + Pico CSS view served from the same origin. Stock metadata loads on page open via `GET /api/dataset`; the form constrains date pickers to the dataset's coverage window; submitting the form calls `GET /api/analyze` and renders the result inline. Visual identity applied via Pico CSS variable overrides — palette, typography, pill graphic device. Frontend code is in [`public/`](public/).
+The page is a single Alpine.js + Pico CSS view served from the same origin. Stock metadata loads on page open via `GET /api/dataset`; the form constrains date pickers to the dataset's coverage window; submitting the form calls `GET /api/analyze` and renders the result inline. Visual identity applied via Pico CSS variable overrides — palette, typography, pill graphic device. Frontend code is in [`public/`](public/).
 
 ## Run locally
 
@@ -116,7 +114,9 @@ The **funds rule** is `floor(availableFunds / buyPrice)` shares, computed entire
 
 ## Postman
 
-A collection is included at [`docs/stock-analyzer.postman_collection.json`](docs/stock-analyzer.postman_collection.json). Import it into Postman and click any request — it works out of the box: the collection's `baseUrl` defaults to the deployed Railway URL. Override `baseUrl` to `http://localhost:3000` if running the app locally via `npm run start:dev`. Folders: **Health** (1 request), **Metadata** (1 request), **Happy path** (4 requests covering the full window plus three engineered sub-windows), **Errors** (3 requests demonstrating each documented error code).
+A collection is included at [`docs/stock-analyzer.postman_collection.json`](docs/stock-analyzer.postman_collection.json). Import it into Postman and override `baseUrl` to `http://localhost:3000` after starting the app with `npm run start:dev`. Folders: **Health** (1 request), **Metadata** (1 request), **Happy path** (4 requests covering the full window plus three engineered sub-windows), **Errors** (3 requests demonstrating each documented error code).
+
+<!-- Historical note: the collection's `baseUrl` originally defaulted to a hosted deployment on Railway; that environment has been retired and the value now points at the same dead URL until manually overridden. -->
 
 ## Future work
 
