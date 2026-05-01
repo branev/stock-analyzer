@@ -8,7 +8,8 @@
 ## Workflow
 
 - **TDD** for `src/analysis/*` and `src/data/*` only. **Test-after** for controllers, DTOs, frontend, and the mock-data generator.
-- Atomic commits with what-and-why messages.
+- Atomic commits with terse what-and-why messages. No agent/reviewer/tool attribution in subject or body. If a message reads long, it probably is — cut.
+- Never `git push` without explicit approval. Stage and commit freely; pushes wait for "push" / "go ahead and push".
 - AAA structure for every test.
 - Never bypass hooks with `--no-verify`. Fix the underlying issue.
 
