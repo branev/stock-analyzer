@@ -2,6 +2,14 @@
 
 A NestJS web app that finds the optimal buy/sell pair within a chosen time slice of an intraday price series, optimising profit per share.
 
+## Status: archived
+
+This repo is a completed take-home artifact, archived on GitHub for read-only reference. The live deployment has been retired.
+
+**For anyone cloning it:** `npm install && npm test` still works — the dataset is committed, no external services are needed, and the dependency manifests are pinned to exact versions. Nothing depends on the archived state.
+
+**What's paused while archived:** Dependabot security PRs, GitHub Actions runs on this repo, and any issue/PR activity. If the project is unarchived later, expect a queue of dependency-update PRs to land within a day, and run `npm audit` before the first commit to see what accrued.
+
 ## What it is
 
 The dataset is a synthetic intraday tick series for a fictional ticker called **ACME** (23,400 ticks at second precision, covering the 2026-04-22 trading day from 09:30:00 UTC to 15:59:59 UTC). The **best-trade** algorithm finds the index pair `(buy, sell)` with `buy < sell` that maximises `prices[sell] - prices[buy]`. It runs in a single O(n) pass with a running minimum: as the loop advances, it tracks the lowest price seen so far and updates the best `(buy, sell)` pair whenever the current price minus the running min beats the previous best profit. Tiebreaker: earliest-buy primary, earliest-sell secondary. The implementation is in [`src/analysis/best-trade.ts`](src/analysis/best-trade.ts) (~30 lines, no dependencies).
