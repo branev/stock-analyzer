@@ -119,6 +119,23 @@
             },
             "description": "Late-day sell-off phase. Expected: buy at 14:30:32 / $117.19, sell at 14:39:25 / $120.01, profit $2.82 per share. Smallest magnitude of the four — the dataset's downtrend gives few profitable opportunities here."
           }
+        },
+        {
+          "name": "Null result - strictly descending micro-window",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/analyze?from=2026-04-22T09:30:00Z&to=2026-04-22T09:30:01Z",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "analyze"],
+              "query": [
+                { "key": "from", "value": "2026-04-22T09:30:00Z" },
+                { "key": "to", "value": "2026-04-22T09:30:01Z" }
+              ]
+            },
+            "description": "Two-tick window where the price strictly drops (108.00 → 107.98). No profitable pair exists, so the algorithm returns `buy: null, sell: null, profitPerShare: null`. Demonstrates the spec interpretation: a flat or strictly descending window is not an error — it is an honest 'no profitable trade' result. The UI renders 'no profitable trade in this window' rather than treating it as a failure."
+          }
         }
       ]
     },
